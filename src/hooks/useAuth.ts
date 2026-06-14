@@ -1,2 +1,6 @@
-// TODO: Step 4 — hook exposing current session, loading state, sign-out
-export {}
+import { useContext } from 'react'
+import { AuthContext } from '../context/AuthContext'
+
+export function useAuth() {
+  return useContext(AuthContext)
+}
