@@ -3,6 +3,7 @@ import HabitList from './pages/HabitList'
 import HabitDetail from './pages/HabitDetail'
 import HabitForm from './pages/HabitForm'
 import Settings from './pages/Settings'
+import SupabaseProbe from './pages/SupabaseProbe'
 
 // TODO: wrap with AuthProvider once auth is wired (Step 4)
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/habit/new" element={<HabitForm />} />
         <Route path="/habit/:id/edit" element={<HabitForm />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/probe" element={<SupabaseProbe />} />
       </Routes>
     </div>
   )
