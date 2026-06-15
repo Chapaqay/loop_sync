@@ -7,11 +7,11 @@ import { habitColor } from '../lib/colors'
 import { ENTRY, NUMERIC_SCALE } from '../lib/core/entry'
 import type { Habit, Entry } from '../types'
 
-// 5 days ending today, newest first (today is leftmost column)
+// 5 days ending today, newest-right (today is the rightmost column)
 function useDays() {
   const today = new Date()
   return useMemo(
-    () => Array.from({ length: 5 }, (_, i) => subDays(today, i)),
+    () => Array.from({ length: 5 }, (_, i) => subDays(today, 4 - i)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [today.toDateString()],
   )
@@ -76,12 +76,12 @@ export default function HabitList() {
         </div>
       </header>
 
-      {/* Date column headers */}
-      <div className="flex items-end px-4 pb-1 border-b border-gray-900">
-        {/* Spacer for name column */}
+      {/* Date column headers — w-12 (48px) matches checkmarkWidth from dimens.xml */}
+      <div className="flex items-end pb-1 border-b border-gray-900">
+        {/* Spacer for name column + kebab */}
         <div className="flex-1" />
         {days.map((day, i) => (
-          <div key={i} className="w-10 text-center">
+          <div key={i} className="w-12 text-center">
             <p className="text-[10px] font-semibold text-gray-600 leading-tight">
               {format(day, 'EEE').toUpperCase()}
             </p>
@@ -90,6 +90,8 @@ export default function HabitList() {
             </p>
           </div>
         ))}
+        {/* Placeholder width matching kebab button so day columns stay aligned */}
+        <div className="w-6" />
       </div>
 
       {/* Habit grid */}
@@ -159,20 +161,20 @@ export default function HabitList() {
 // ── Ring icon ─────────────────────────────────────────────────────────────────
 
 function RingIcon({ color, fill }: { color: string; fill: number }) {
-  const r = 8
-  const cx = 11
-  const cy = 11
+  const r = 9
+  const cx = 12
+  const cy = 12
   const circ = 2 * Math.PI * r
   const clamped = Math.min(Math.max(fill, 0), 1)
 
   return (
-    <svg width="22" height="22" viewBox="0 0 22 22" className="flex-shrink-0">
+    <svg width="24" height="24" viewBox="0 0 24 24" className="flex-shrink-0">
       {/* Background track */}
       <circle
         cx={cx} cy={cy} r={r}
         fill="none"
         stroke="rgba(255,255,255,0.08)"
-        strokeWidth="2.5"
+        strokeWidth="3"
       />
       {/* Filled arc */}
       {clamped > 0 && (
@@ -180,7 +182,7 @@ function RingIcon({ color, fill }: { color: string; fill: number }) {
           cx={cx} cy={cy} r={r}
           fill="none"
           stroke={color}
-          strokeWidth="2.5"
+          strokeWidth="3"
           strokeDasharray={circ}
           strokeDashoffset={circ * (1 - clamped)}
           strokeLinecap="round"
@@ -212,12 +214,13 @@ function HabitRow({
 }: HabitRowProps) {
   return (
     <div className="relative border-b border-gray-900">
+      {/* Row — h-12 (48px) matches checkmarkHeight from dimens.xml */}
       <div
-        className="flex items-center px-4 py-2 active:bg-gray-900 cursor-pointer"
+        className="flex items-center h-12 active:bg-gray-900 cursor-pointer"
         onClick={onTap}
       >
-        {/* Name column: ring + name */}
-        <div className="flex-1 flex items-center gap-1.5 min-w-0 pr-1">
+        {/* Name column: ring + name, takes all remaining space */}
+        <div className="flex-1 flex items-center gap-2 min-w-0 pl-3 pr-1">
           <RingIcon color={color} fill={score} />
           <span
             className="text-sm font-medium truncate"
@@ -227,7 +230,7 @@ function HabitRow({
           </span>
         </div>
 
-        {/* Day cells */}
+        {/* Day cells — w-12 (48px) = checkmarkWidth from dimens.xml */}
         {days.map((day) => (
           <DayCell
             key={day}
@@ -237,9 +240,9 @@ function HabitRow({
           />
         ))}
 
-        {/* Kebab */}
+        {/* Kebab — 24px wide so header spacer can match */}
         <button
-          className="ml-1 px-1 text-gray-700 hover:text-gray-400 text-base z-20 flex-shrink-0"
+          className="w-6 flex items-center justify-center text-gray-700 hover:text-gray-400 text-base z-20 flex-shrink-0 h-full"
           onClick={onMenuToggle}
           aria-label="More options"
         >
@@ -247,9 +250,9 @@ function HabitRow({
         </button>
       </div>
 
-      {/* Dropdown */}
+      {/* Dropdown menu */}
       {menuOpen && (
-        <div className="absolute right-4 top-8 z-30 w-36 rounded-lg border border-gray-800 bg-gray-900 shadow-2xl overflow-hidden">
+        <div className="absolute right-4 top-10 z-30 w-36 rounded-lg border border-gray-800 bg-gray-900 shadow-2xl overflow-hidden">
           <button
             className="w-full px-4 py-3 text-left text-sm text-gray-300 hover:bg-gray-800 active:bg-gray-800"
             onClick={(e) => { e.stopPropagation(); onEdit() }}
@@ -274,13 +277,13 @@ function DayCell({ habit, entry, color }: { habit: Habit; entry?: Entry; color: 
   const val = entry?.value
 
   if (habit.type === 0) {
-    // Boolean
+    // Boolean: checkmark or X, 48×48 cell
     const done = val !== undefined && val >= ENTRY.YES_AUTO
     return (
-      <div className="w-10 flex items-center justify-center">
+      <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
         <span
-          className={`text-base font-bold ${done ? '' : 'text-gray-800'}`}
-          style={done ? { color } : undefined}
+          className="text-base font-bold"
+          style={done ? { color } : { color: 'rgba(255,255,255,0.12)' }}
         >
           {done ? '✓' : '✕'}
         </span>
@@ -288,30 +291,30 @@ function DayCell({ habit, entry, color }: { habit: Habit; entry?: Entry; color: 
     )
   }
 
-  // Numerical
+  // Numerical: show value or dim X
   if (!val) {
     return (
-      <div className="w-10 flex items-center justify-center">
-        <span className="text-base font-bold text-gray-800">✕</span>
+      <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+        <span className="text-base font-bold" style={{ color: 'rgba(255,255,255,0.12)' }}>✕</span>
       </div>
     )
   }
 
   const num = val / NUMERIC_SCALE
-  const target = (habit.target_value ?? 0)
+  const target = habit.target_value ?? 0
   const metTarget = target > 0 ? num >= target : true
   const displayNum = Number.isInteger(num) ? String(num) : num.toFixed(1)
 
   return (
-    <div className="w-10 flex flex-col items-center justify-center leading-tight">
+    <div className="w-12 h-12 flex flex-col items-center justify-center leading-tight flex-shrink-0">
       <span
         className="text-xs font-bold"
-        style={metTarget ? { color } : undefined}
+        style={{ color: metTarget ? color : 'rgba(255,255,255,0.35)' }}
       >
-        <span className={metTarget ? '' : 'text-gray-500'}>{displayNum}</span>
+        {displayNum}
       </span>
       {habit.unit && (
-        <span className="text-[9px] text-gray-600">{habit.unit}</span>
+        <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{habit.unit}</span>
       )}
     </div>
   )
