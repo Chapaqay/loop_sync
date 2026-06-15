@@ -38,9 +38,9 @@ export default function App() {
         <AuthGate>
           <Routes>
             <Route path="/" element={<HabitList />} />
-            <Route path="/habit/:id" element={<HabitDetail />} />
-            <Route path="/habit/new" element={<HabitForm />} />
-            <Route path="/habit/:id/edit" element={<HabitForm />} />
+            <Route path="/habits/:id" element={<HabitDetail />} />
+            <Route path="/habits/new" element={<HabitForm />} />
+            <Route path="/habits/:id/edit" element={<HabitForm />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
