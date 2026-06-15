@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useHabits, useProfile, useArchiveHabit } from '../hooks/useHabits'
-import { useAuth } from '../hooks/useAuth'
 import { habitColor } from '../lib/colors'
 import type { Habit } from '../types'
 
@@ -9,7 +8,6 @@ type Tab = 'active' | 'archived'
 
 export default function HabitList() {
   const navigate = useNavigate()
-  const { signOut } = useAuth()
   const [tab, setTab] = useState<Tab>('active')
   const [menuOpen, setMenuOpen] = useState<string | null>(null)
 
