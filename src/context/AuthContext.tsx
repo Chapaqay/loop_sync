@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState, ReactNode } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
-import { isTelegramMiniApp, getMiniAppInitData } from '../lib/telegram'
+import { isTelegramMiniApp, getMiniAppInitData, expandMiniApp } from '../lib/telegram'
 import { signInWithMiniApp } from '../lib/auth'
 
 interface AuthState {
@@ -44,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     // If running inside Telegram Mini App, auto-sign-in with initData
+    expandMiniApp()
     if (isTelegramMiniApp()) {
       signInWithMiniApp(getMiniAppInitData()).catch((err: Error) => {
         setState((prev) => ({ ...prev, loading: false, error: err.message }))

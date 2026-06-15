@@ -15,6 +15,10 @@ export default function SignIn() {
 
   const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME as string
 
+  // Debug info — remove after Mini App detection is confirmed working
+  const debugInitDataLen = window.Telegram?.WebApp?.initData?.length ?? 0
+  const debugWebAppExists = Boolean(window.Telegram?.WebApp)
+
   useEffect(() => {
     // Register global callback before injecting the widget script
     window.onTelegramAuth = async (user) => {
@@ -64,6 +68,11 @@ export default function SignIn() {
       {error && (
         <p className="max-w-xs text-center text-sm text-red-400">{error}</p>
       )}
+
+      {/* DEBUG — remove after detection confirmed */}
+      <p className="text-xs text-gray-700 font-mono text-center">
+        WebApp exists: {String(debugWebAppExists)} | initData len: {debugInitDataLen}
+      </p>
     </div>
   )
 }
