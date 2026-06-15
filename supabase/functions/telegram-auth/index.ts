@@ -98,11 +98,11 @@ async function verifyMiniApp(initData: string | undefined, botToken: string): Pr
 
   const enc = new TextEncoder()
 
-  // secret_key = HMAC-SHA256("WebAppData", bot_token)
-  const botKeyRaw = await crypto.subtle.importKey('raw', enc.encode(botToken), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
-  const secretKey = await crypto.subtle.sign('HMAC', botKeyRaw, enc.encode('WebAppData'))
+  // secret_key = HMAC-SHA256(key="WebAppData", msg=bot_token)
+  const webAppDataKey = await crypto.subtle.importKey('raw', enc.encode('WebAppData'), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+  const secretKey = await crypto.subtle.sign('HMAC', webAppDataKey, enc.encode(botToken))
 
-  // expected = HMAC-SHA256(data_check_string, secret_key)
+  // expected = HMAC-SHA256(key=secret_key, msg=data_check_string)
   const hmacKey = await crypto.subtle.importKey('raw', secretKey, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
   const sig = await crypto.subtle.sign('HMAC', hmacKey, enc.encode(dataCheckString))
   const expected = bufToHex(sig)
